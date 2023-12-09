@@ -38,9 +38,11 @@ class FollowSerializer(serializers.ModelSerializer):
         read_only_fields = ('user',)
 
     def validate(self, data):
+        """Проверка подписки(нельзя подписаться на себя самого же.)."""
         if data['user'] == data['following']:
             raise serializers.ValidationError(
-                'Вы не можете подписаться сам на себя!')
+                'Вы не можете подписаться сам на себя!'
+            )
         return data
 
 
