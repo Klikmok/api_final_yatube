@@ -1,4 +1,4 @@
-from rest_framework import viewsets, generics, permissions, filters, mixins
+from rest_framework import viewsets, permissions, filters, mixins
 from rest_framework.pagination import LimitOffsetPagination
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
@@ -28,7 +28,15 @@ class GroupViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = GroupSerializer
 
 
-class FollowListCreate(generics.ListCreateAPIView):
+class DefaultModelMixin(
+    viewsets.GenericViewSet,
+    mixins.CreateModelMixin,
+    mixins.ListModelMixin,
+):
+    None
+
+
+class FollowViewSet(DefaultModelMixin):
     serializer_class = FollowSerializer
     filter_backends = (DjangoFilterBackend, filters.SearchFilter,)
     filterset_fields = ('following',)
@@ -46,28 +54,7 @@ class FollowListCreate(generics.ListCreateAPIView):
         )
 
 
-class CommentListCreate(generics.ListCreateAPIView):
-    serializer_class = CommentSerializer
-
-    def get_queryset(self):
-        post_id = self.kwargs.get('post_id')
-        post = get_object_or_404(Post, pk=post_id)
-        queryset = Comment.objects.filter(post=post)
-        return queryset
-
-
-class DefaultModelMixin(
-    viewsets.GenericViewSet,
-    mixins.CreateModelMixin,
-    mixins.DestroyModelMixin,
-    mixins.ListModelMixin,
-    mixins.RetrieveModelMixin,
-    mixins.UpdateModelMixin,
-):
-    None
-
-
-class CommentViewSet(DefaultModelMixin):
+class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
     permission_classes = (IsAuthorOrReadOnlyPermission,)
 

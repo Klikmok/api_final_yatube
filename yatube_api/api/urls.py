@@ -5,7 +5,7 @@ from .views import (
     PostViewSet,
     GroupViewSet,
     CommentViewSet,
-    FollowListCreate
+    FollowViewSet
 )
 
 # Здесь прописываем все вьюсеты. Не вьюсеты оставляем в path.
@@ -15,9 +15,9 @@ router.register(
 )
 router.register('groups', GroupViewSet)
 router.register('posts', PostViewSet)
+router.register('follow', FollowViewSet, basename='following')
 
 urlpatterns = [
-    path('v1/follow/', FollowListCreate.as_view()),
     path('v1/', include(router.urls)),
     path('v1/', include('djoser.urls')),
     path('v1/', include('djoser.urls.jwt')),
